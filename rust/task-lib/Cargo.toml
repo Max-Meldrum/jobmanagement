@@ -1,10 +1,10 @@
 [package]
 name = "executor"
 version = "0.1.0"
-authors = ["Max Meldrum <max@meldrum.se>"]
+authors = ["Max Meldrum <mmeldrum@kth.se>"]
 
 [dependencies]
-kompact = { git = "https://github.com/Max-Meldrum/kompact", branch = "dev", features = ["protobuf"]}
+kompact = {git = "https://github.com/kompics/kompact", branch = "master", features = ["protobuf"]}
 protobuf = "2.0"
 bytes = "0.4"
 
