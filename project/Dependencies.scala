@@ -69,6 +69,11 @@ object Dependencies {
     "org.apache.hadoop" % "hadoop-hdfs"  % yarnVersion % Test classifier "tests"
   )
 
+  val lightHdfsDependencies: Seq[ModuleID] = Seq(
+    "org.apache.hadoop" % "hadoop-client" % yarnVersion,
+    "org.apache.hadoop" % "hadoop-hdfs"  % yarnVersion % Test classifier "tests"
+  )
+
 
   val akkaHttpDependencies: Seq[ModuleID] = Seq(
     "com.typesafe.akka" %% "akka-http"   % akkaHttpVersion,
@@ -86,36 +91,29 @@ object Dependencies {
 
   // Actual Dependencies
   val statemanagerDeps: Seq[ModuleID] = basic ++ akkaDependencies ++ sigarDependencies
-  val appmanagerDeps: Seq[ModuleID] = basic ++ akkaDependencies ++ sigarDependencies ++ akkaHttpDependencies
+  val appmanagerCoreDeps: Seq[ModuleID] = basic ++ akkaDependencies ++ sigarDependencies ++ akkaHttpDependencies
+  val yarnAppmanagerDeps: Seq[ModuleID] = appmanagerCoreDeps ++ yarnDependencies
+
   val protobufDeps: Seq[ModuleID] = testDependencies ++ protobufDependencies ++ akkaDependencies
   val kompactExtDeps: Seq[ModuleID] = basic ++ protobufDependencies ++ nettyDependencies ++ simpleAkkaDependencies ++ logbackDependencies
   val runtimeCommonDeps: Seq[ModuleID] = testDependencies ++ logDependencies ++ simpleAkkaDependencies
   val standaloneManagerDeps: Seq[ModuleID] = basic ++ akkaDependencies ++ sigarDependencies ++ logbackDependencies
-  val taskmasterDeps: Seq[ModuleID] = basic ++ akkaRemoteDependencies
-  val taskexecutorDeps: Seq[ModuleID] = basic ++ akkaRemoteDependencies ++ sigarDependencies
   val runtimeTestsDeps: Seq[ModuleID] = basic ++ akkaMultiNodeDependencies ++ akkaDependencies
 
   // Cluster Manager
-
   val clusterManagerCommonDeps: Seq[ModuleID] = basic ++ sigarDependencies
-
-  val yarnClientDeps: Seq[ModuleID] = basic ++ yarnDependencies
-  val yarnExecutorDeps: Seq[ModuleID] = basic ++ akkaRemoteDependencies ++ sigarDependencies
-  val yarnMasterDeps: Seq[ModuleID] = basic ++ akkaRemoteDependencies
+  val yarnExecutorDeps: Seq[ModuleID] = basic ++ akkaRemoteDependencies ++ sigarDependencies ++ lightHdfsDependencies
 
 
   // Helpers
   val statemanager = libraryDependencies ++= statemanagerDeps
-  val appmanager = libraryDependencies ++= appmanagerDeps
-  val taskmaster = libraryDependencies ++= taskmasterDeps
-  val taskexecutor = libraryDependencies ++= taskexecutorDeps
+  val appmanagerCore = libraryDependencies ++= appmanagerCoreDeps
+  val appmanagerYarn = libraryDependencies ++= yarnAppmanagerDeps
   val protobuf = libraryDependencies ++= protobufDeps
   val kompactExtension = libraryDependencies ++= kompactExtDeps
   val runtimeCommon = libraryDependencies ++= runtimeCommonDeps
   val runtimeTests = libraryDependencies ++= runtimeTestsDeps
   val clusterManagerCommon = libraryDependencies ++= clusterManagerCommonDeps
   val standalone = libraryDependencies ++= standaloneManagerDeps
-  val yarnClient = libraryDependencies ++= yarnClientDeps
   val yarnExecutor = libraryDependencies ++= yarnExecutorDeps
-  val yarnMaster = libraryDependencies ++= yarnMasterDeps
 }

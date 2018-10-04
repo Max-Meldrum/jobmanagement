@@ -19,5 +19,5 @@ native/
 build/
 .idea/
 weldrunner
-executor
+executor_rust
 hadoop*

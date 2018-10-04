@@ -14,6 +14,9 @@ mkdir -p build
 
 function cpy_jars {
     case "$1" in
+    "ye")
+        cp executor/yarn/target/scala-"$SCALA_VER"/yarn-executor.jar build/yarn-executor.jar
+        ;;
     "sa")
         cp cluster-manager/standalone/target/scala-"$SCALA_VER"/standalone.jar build/standalone.jar
         ;;
@@ -33,6 +36,19 @@ esac
 
 
 case "$1" in
+    "ye"|"yarnExecutor")
+        echo $GREEN"Compiling YarnExecutor..."
+        sbt_fail=0
+        (sbt yarnExecutor/assembly) || sbt_fail=1
+        if [[ $sbt_fail -ne 0 ]];
+        then
+            echo $RED"Failed to compile YarnEecutor"
+            exit 1
+        else
+            echo $GREEN"yarn-executor.jar is being moved to build/"
+            cpy_jars "ye"
+        fi
+        ;;
     "am"|"appmanager")
         echo $GREEN"Compiling AppManager..."
         sbt_fail=0

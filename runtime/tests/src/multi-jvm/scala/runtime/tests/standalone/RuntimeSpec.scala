@@ -1,10 +1,11 @@
-package runtime.tests
+package runtime.tests.standalone
 
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
 import akka.remote.testkit.MultiNodeSpec
 import akka.testkit.ImplicitSender
 import runtime.common.Identifiers
+import runtime.tests.STMultiNodeSpec
 
 import scala.concurrent.duration._
 

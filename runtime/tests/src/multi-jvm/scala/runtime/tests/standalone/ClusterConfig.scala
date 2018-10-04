@@ -1,4 +1,4 @@
-package runtime.tests
+package runtime.tests.standalone
 
 import akka.remote.testkit.MultiNodeConfig
 import com.typesafe.config.ConfigFactory

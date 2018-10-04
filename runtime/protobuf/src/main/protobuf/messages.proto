@@ -12,8 +12,6 @@ option (scalapb.options) = {
   // file, so we set single_file to true.
   single_file: true
   flat_package: true
-  preamble: "sealed trait AllocateResponse"
-  preamble: "sealed trait SlotRequestResp"
 };
 
 // Traits
@@ -24,21 +22,6 @@ enum SliceState {
     FREE = 0;
     ALLOCATED = 1;
     OFFERED = 2;
-}
-
-message AcceptedOffer {
-    SlotOffer offer = 1 [(scalapb.field).no_box = true];
-    ActorRefProto appmaster = 2 [(scalapb.field).no_box = true];
-}
-
-message SlotOffer {
-    AddressProto taskmanager = 1 [(scalapb.field).no_box = true];
-    repeated ContainerSlice slots = 2;
-    string jobId = 3;
-}
-
-message CancelOffer {
-    SlotOffer offer = 1 [(scalapb.field).no_box = true];
 }
 
 // Represents a Remote ActorRef
@@ -199,10 +182,21 @@ message YarnTaskTransferred {
     ArcTask task = 2 [(scalapb.field).no_box = true];
 }
 
+message ExecutorBinary {
+    string path = 1; // e.g., HDFS path or path on local file system.
+}
+
 
 // For now as we are sending arguments to the binary
 message YarnExecutorUp {
     int32 taskId = 1;
+    ContainerInfo info = 2 [(scalapb.field).no_box = true];
+}
+
+message ContainerInfo {
+    string host = 1;
+    string arch = 2;
+    string os = 3;
 }
 
 message YarnExecutorStart {

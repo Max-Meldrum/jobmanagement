@@ -48,7 +48,7 @@ class StateManager extends Actor with ActorLogging {
 
       // Respond with Ref to StateMaster and Kompact Proxy Addr
       val addr = KompactExtension(context.system).getProxyAddr
-      sender() ! StateMasterConn(stateMaster, "")
+      sender() ! StateMasterConn(stateMaster, addr)
     case Terminated(ref) =>
       stateMasters = stateMasters.filterNot(_ == ref)
     case _ =>

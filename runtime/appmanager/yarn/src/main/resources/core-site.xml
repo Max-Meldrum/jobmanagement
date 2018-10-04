@@ -1,0 +1,12 @@
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+
+    <property>
+        <name>hadoop.security.authentication</name>
+        <value>simple</value> <!-- A value of "simple" would disable security. -->
+    </property>
+</configuration>
+
