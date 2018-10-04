@@ -1,16 +1,15 @@
 package runtime.protobuf
 
-import akka.actor.{ActorRef, ActorSystem, Address, ExtendedActorSystem}
+import akka.actor.{ActorRef, ActorSystem, Address}
 import java.net.{InetSocketAddress => InetSocketAddressJava}
 import messages.{ActorRefProto, AddressProto, InetProto}
-
 
 
 object ProtoConversions {
 
   object ActorRef {
     implicit def toRef(p: ActorRefProto)(implicit system: ActorSystem): ActorRef =
-      system.asInstanceOf[ExtendedActorSystem].provider.resolveActorRef(p.path)
+      ExternalAddress(system).resolveRef(p.path)
     implicit def toProto(ref: ActorRef)(implicit system: ActorSystem) : ActorRefProto =
       ActorRefProto(ref.path.toSerializationFormatWithAddress(ExternalAddress(system).addressForAkka))
   }
