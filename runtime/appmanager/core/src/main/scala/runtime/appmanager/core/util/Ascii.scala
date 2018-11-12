@@ -15,7 +15,7 @@ import scala.collection.mutable.ArrayBuffer
 
 // Based on https://github.com/eugenp/tutorials/blob/master/core-java/src/main/java/com/baeldung/asciiart/AsciiArt.java
 // MIT License
-object Ascii {
+private[runtime] object Ascii {
 
   sealed trait DAG
   case object PhysicalDAG extends DAG

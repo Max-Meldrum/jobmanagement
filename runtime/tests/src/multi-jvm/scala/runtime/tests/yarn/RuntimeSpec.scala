@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 /** RuntimeSpec sets up our runtime cluster,
   * in this case using YARN as cluster manager.
   */
-class RuntimeSpec extends MultiNodeSpec(ClusterConfig)
+private[runtime] class RuntimeSpec extends MultiNodeSpec(ClusterConfig)
   with STMultiNodeSpec with ImplicitSender {
 
   def initialParticipants = roles.size
@@ -28,7 +28,7 @@ class RuntimeSpec extends MultiNodeSpec(ClusterConfig)
 
       // Set up Listeners
       runOn(appmanager) {
-        system.actorOf(runtime.appmanager.actors.ClusterListener(), Identifiers.LISTENER)
+        system.actorOf(runtime.appmanager.yarn.actor.YarnAppmanager(), Identifiers.LISTENER)
       }
 
       runOn(statemanager) {

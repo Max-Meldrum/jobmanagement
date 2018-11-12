@@ -13,7 +13,7 @@ import runtime.protobuf.messages._
   * JSON Marshaller/Unmarshaller
   * Should probably look into changing this to Circe later on..
   */
-trait JsonConverter extends SprayJsonSupport with DefaultJsonProtocol {
+private[runtime] trait JsonConverter extends SprayJsonSupport with DefaultJsonProtocol {
   import spray.json._
 
   // ArcTask/ArcApp
@@ -29,15 +29,14 @@ trait JsonConverter extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val memMetricFormat = jsonFormat3(MemoryMetric.apply)
   implicit val exhaustiveMetricFormat = jsonFormat3(ExhaustiveMetric.apply)
   implicit val namedMetricFormat = jsonFormat2(NamedMetric.apply)
-  implicit val arcMetricFormat1 = lift(new JsonWriter[ArcMetric] {
-    override def write(obj: ArcMetric): JsValue = obj match {
+  implicit val runtimeMetricFormat1 = lift(new JsonWriter[RuntimeMetric] {
+    override def write(obj: RuntimeMetric): JsValue = obj match {
       case cpu: CpuMetric => cpu.toJson
       case mem: MemoryMetric => mem.toJson
       case ex: ExhaustiveMetric => ex.toJson
       case UnknownMetric => throw new RuntimeException("Unknown JSON Format")
     }
   })
-
 
   // ExecutorMetric
   implicit val processStateFormat = jsonFormat3(ProcessState.apply)

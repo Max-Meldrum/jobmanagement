@@ -12,7 +12,7 @@ import runtime.appmanager.core.util.AppManagerConfig
 import runtime.common.{ActorPaths, Identifiers}
 import runtime.protobuf.messages._
 import akka.pattern._
-import runtime.appmanager.core.actor.MetricAccumulator.{StateManagerMetrics, TaskManagerMetrics}
+import runtime.appmanager.core.actor.MetricAccumulator.StateManagerMetrics
 
 import scala.concurrent.duration._
 import scala.collection.mutable
@@ -20,7 +20,7 @@ import scala.concurrent.Future
 import scala.util.Try
 
 
-private[appmanager] object AppManager {
+private[runtime] object AppManager {
   final case class ArcAppRequest(app: ArcApp, liveFeed: Boolean = false)
   final case class ArcDeployRequest(priority: Int, locality: Boolean, tasks: Seq[ArcTask])
   final case class ArcAppStatus(id: String)
@@ -33,7 +33,7 @@ private[appmanager] object AppManager {
   type ArcAppId = String
 }
 
-private[appmanager] abstract class AppManager extends
+private[runtime] abstract class AppManager extends
   Actor with ActorLogging with AppManagerConfig {
   import AppManager._
   // For Akka HTTP (REST)
@@ -83,8 +83,6 @@ private[appmanager] abstract class AppManager extends
         case None =>
           sender() ! s"Could not locate AppMaster connected to $id"
       }
-    case t@TaskManagerMetrics =>
-      metricAccumulator forward t
     case s@StateManagerMetrics =>
       metricAccumulator forward s
     case r@ArcAppMetricRequest(id) =>

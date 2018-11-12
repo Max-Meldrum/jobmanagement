@@ -65,6 +65,9 @@ private[appmanager] class AppRoute(appManager: ActorRef)(implicit val ec: Execut
     (appManager ? ListAppsWithDetails).mapTo[String]
 
 
+  /** Deploy route which returns the App ID
+    * and processes it in the background
+    */
   private def deploy: Route = {
     entity(as[ArcDeployRequest]) { req =>
       val indexedTasks = indexTasks(req.tasks)
@@ -77,6 +80,9 @@ private[appmanager] class AppRoute(appManager: ActorRef)(implicit val ec: Execut
     }
   }
 
+  /** Deploy route which streams a live view of
+    * the deployment process back to the client
+    */
   private def deployStream: Route = {
     entity(as[ArcDeployRequest]) { req =>
       val indexedTasks = indexTasks(req.tasks)

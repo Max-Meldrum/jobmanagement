@@ -10,18 +10,17 @@ import runtime.common.Identifiers
 import scala.collection.mutable
 
 
-object MetricAccumulator {
+private[runtime] object MetricAccumulator {
   def apply(): Props = Props(new MetricAccumulator())
 
   final case object ClusterMetrics
-  final case object TaskManagerMetrics
   final case object StateManagerMetrics
 
-  sealed trait ArcMetric
-  final case class CpuMetric(loadAverage: Double, processors: Int) extends ArcMetric
-  final case class MemoryMetric(heapUsed: Double, heapCommited: Double, heapMax: Long) extends ArcMetric
-  final case object UnknownMetric extends ArcMetric
-  final case class ExhaustiveMetric(address: String, cpu: CpuMetric, mem: MemoryMetric) extends ArcMetric
+  sealed trait RuntimeMetric
+  final case class CpuMetric(loadAverage: Double, processors: Int) extends RuntimeMetric
+  final case class MemoryMetric(heapUsed: Double, heapCommited: Double, heapMax: Long) extends RuntimeMetric
+  final case object UnknownMetric extends RuntimeMetric
+  final case class ExhaustiveMetric(address: String, cpu: CpuMetric, mem: MemoryMetric) extends RuntimeMetric
 }
 
 /** Actor that collects host level metrics
@@ -29,12 +28,11 @@ object MetricAccumulator {
   * Currently gathers Cpu and HeapMemory objects from akka.cluster.metrics.
   * Gathers metrics only from TaskManagers and StateManagers
   */
-class MetricAccumulator extends Actor with ActorLogging{
+private[runtime] class MetricAccumulator extends Actor with ActorLogging{
   import MetricAccumulator._
 
-  val metrics = ClusterMetricsExtension(context.system)
-  var taskManagerMetrics = mutable.HashMap[Address, ExhaustiveMetric]()
-  var stateManagerMetrics = mutable.HashMap[Address, ExhaustiveMetric]()
+  private val metrics = ClusterMetricsExtension(context.system)
+  private var stateManagerMetrics = mutable.HashMap[Address, ExhaustiveMetric]()
 
 
   override def preStart(): Unit = {
@@ -52,13 +50,9 @@ class MetricAccumulator extends Actor with ActorLogging{
   def receive = {
     case ClusterMetricsChanged(nodeMetrics) =>
       nodeMetrics.foreach(handleMetrics)
-    case TaskManagerMetrics =>
-      sender() ! taskManagerMetrics.values.toSeq
     case StateManagerMetrics =>
       sender() ! stateManagerMetrics.values.toSeq
     case ClusterMetrics =>
-    case MemberRemoved(m, _) if m.hasRole(Identifiers.TASK_MANAGER) =>
-      taskManagerMetrics.remove(m.address)
     case MemberRemoved(m, _) if m.hasRole(Identifiers.STATE_MANAGER) =>
       stateManagerMetrics.remove(m.address)
   }
@@ -74,16 +68,10 @@ class MetricAccumulator extends Actor with ActorLogging{
       .map(_.roles)
       .flatten
 
-    if (roles.contains(Identifiers.TASK_MANAGER))
-      tmMetricUpdate(nodeMetrics)
-    else if (roles.contains(Identifiers.STATE_MANAGER))
+    if (roles.contains(Identifiers.STATE_MANAGER))
       smMetricUpdate(nodeMetrics)
   }
 
-  private def tmMetricUpdate(nodeMetrics: NodeMetrics): Unit = {
-    exhaustiveMetric(nodeMetrics)
-      .map(m => taskManagerMetrics.put(nodeMetrics.address, m))
-  }
 
   private def smMetricUpdate(nodeMetrics: NodeMetrics): Unit = {
     exhaustiveMetric(nodeMetrics)

@@ -17,9 +17,6 @@ function cpy_jars {
     "ye")
         cp executor/yarn/target/scala-"$SCALA_VER"/yarn-executor.jar build/yarn-executor.jar
         ;;
-    "sa")
-        cp cluster-manager/standalone/target/scala-"$SCALA_VER"/standalone.jar build/standalone.jar
-        ;;
     "sm")
         cp runtime/statemanager/target/scala-"$SCALA_VER"/statemanager.jar build/statemanager.jar
         ;;
@@ -31,7 +28,7 @@ function cpy_jars {
         cp runtime/appmanager/target/scala-"$SCALA_VER"/appmanager.jar build/appmanager.jar
         cp cluster-manager/standalone/target/scala-"$SCALA_VER"/standalone.jar build/standalone.jar
         ;;
-esac
+    esac
 }
 
 
@@ -62,19 +59,6 @@ case "$1" in
             cpy_jars "am"
         fi
         ;;
-    "standalone"|"sa")
-        echo $CYAN"Compiling Standalone Cluster Manager..."
-        sbt_fail=0
-        (sbt standalone/assembly) || sbt_fail=1
-        if [[ $sbt_fail -ne 0 ]];
-        then
-            echo $RED"Failed to compile Standalone Cluster Manager"
-            exit 1
-        else
-            echo $CYAN"standalone.jar is being moved to build/"
-            cpy_jars "sa"
-        fi
-        ;;
     "statemanager"|"sm")
         echo $BLUE"Compiling StateManager..."
         sbt_fail=0
@@ -92,14 +76,13 @@ case "$1" in
         echo $WHITE"Compiling everything..."
         sbt_fail=0
         (sbt statemanager/assembly);
-        (sbt standalone/assembly);
         (sbt appmanager/assembly) || sbt_fail=1
         if [[ $sbt_fail -ne 0 ]];
         then
             echo $RED"Failed to compile"
             exit 1
         else
-            echo $WHITE"Moving appmanager, statemanager and standalone jars to build/"
+            echo $WHITE"Moving appmanager and statemanager jars to build/"
             cpy_jars "all"
         fi
         ;;

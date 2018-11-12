@@ -6,11 +6,11 @@ import runtime.common.Identifiers
 import runtime.protobuf.messages.ArcApp
 
 
-private[yarn] object YarnAppmanager {
+private[runtime] object YarnAppmanager {
   def apply(): Props = Props(new YarnAppmanager)
 }
 
-private[yarn] class YarnAppmanager extends AppManager {
+private[runtime] class YarnAppmanager extends AppManager {
   import runtime.appmanager.core.actor.AppManager._
   import akka.pattern._
 

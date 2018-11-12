@@ -14,7 +14,6 @@ object ClusterRoute {
   import runtime.appmanager.core.actor.MetricAccumulator._
   import scala.concurrent.duration._
 
-
   final case class NamedMetric(name: String, metrics: ExhaustiveMetric)
 
 
@@ -37,19 +36,9 @@ object ClusterRoute {
     }
 
     private def collect(): Future[Seq[NamedMetric]] = {
-      val full = for {
+      for {
         sm <- (am ? StateManagerMetrics).mapTo[Seq[ExhaustiveMetric]]
-        tm <- (am ? TaskManagerMetrics).mapTo[Seq[ExhaustiveMetric]]
-      } yield mash(sm, tm)
-      full
-    }
-    /** Add Identifier to each ExhaustiveMetric as we are doing a general
-      * /cluster/metrics call
-      */
-    private def mash(sm: Seq[ExhaustiveMetric], tm: Seq[ExhaustiveMetric]): Seq[NamedMetric] = {
-      val updatedSm = sm.map(s => NamedMetric(Identifiers.STATE_MANAGER, s))
-      val updatedTm = tm.map(t => NamedMetric(Identifiers.TASK_MANAGER, t))
-      updatedSm ++ updatedTm
+      } yield sm.map(s => NamedMetric(Identifiers.STATE_MANAGER, s))
     }
   }
 
@@ -57,30 +46,6 @@ object ClusterRoute {
     def apply(am: ActorRef)(implicit ec: ExecutionContext): Route =
       new ClusterOverviewRoute(am).route()
   }
-
-  /** api/$version/cluster/taskmanager/
-    * GET -> metrics
-    * @param am ActorRef to AppManager
-    */
-  final case class TaskManagerRoute(am: ActorRef) extends JsonConverter {
-    implicit val timeout = Timeout(2.seconds)
-
-    def route(): Route =
-      pathPrefix("taskmanager") {
-        path("metrics") {
-          get {
-            onSuccess((am ? TaskManagerMetrics).mapTo[Seq[ExhaustiveMetric]]) { res =>
-              complete(res)
-            }
-          }
-        }
-    }
-  }
-
-  object TaskManagerRoute {
-    def apply(am: ActorRef): Route = new TaskManagerRoute(am).route()
-  }
-
 
   /** api/$version/cluster/statemanager/
     * GET -> metrics
@@ -113,7 +78,6 @@ class ClusterRoute(appManager: ActorRef)(implicit val ec: ExecutionContext) {
   val route: Route =
     pathPrefix("cluster") {
       ClusterOverviewRoute(appManager)~
-      TaskManagerRoute(appManager)~
       StateManagerRoute(appManager)
     }
 }

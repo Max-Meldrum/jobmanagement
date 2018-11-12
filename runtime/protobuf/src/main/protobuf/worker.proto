@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+// Brought in from scalapb-runtime
+import "scalapb/scalapb.proto";
+import "messages.proto";
+
+option (scalapb.options) = {
+  package_name: "runtime.protobuf.messages"
+  single_file: true
+  flat_package: true
+};
+
+message BinaryTransferred {
+    int32 id = 1;
+}
+

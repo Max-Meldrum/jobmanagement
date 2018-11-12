@@ -37,8 +37,8 @@ lazy val runtimeMultiJvmSettings = multiJvmSettings ++ Seq(
 
 lazy val root = (project in file("."))
   .aggregate(statemanager, appmanagerCore, appmanagerYarn, runtimeProtobuf,
-    runtimeCommon, runtimeTests, standalone, kompactExtension,
-    yarnExecutor, executorCommon,  clusterManagerCommon)
+    runtimeCommon, runtimeTests, kompactExtension, worker,
+    yarnExecutor, executorCommon)
 
 
 lazy val statemanager = (project in file("runtime/statemanager"))
@@ -93,7 +93,8 @@ lazy val kompactExtension = (project in file("kompact-extension"))
 lazy val runtimeTests = (project in file("runtime/tests"))
   .dependsOn(
     runtimeProtobuf, runtimeCommon % "test->test; compile->compile",
-    statemanager, appmanagerCore, standalone % "test->test; compile->compile")
+    statemanager, appmanagerCore, appmanagerYarn % "test->test; compile->compile"
+  )
   .settings(runtimeSettings: _*)
   .settings(Dependencies.runtimeTests)
   .settings(moduleName("runtime.tests"))
@@ -103,24 +104,18 @@ lazy val runtimeTests = (project in file("runtime/tests"))
   .settings(
     parallelExecution in Test := false // do not run test cases in
   )
-lazy val clusterManagerCommon = (project in file("cluster-manager/common"))
-  .dependsOn(runtimeProtobuf % "test->test; compile->compile")
-  .settings(runtimeSettings: _*)
-  .settings(Dependencies.clusterManagerCommon)
-  .settings(moduleName("clustermanager.common"))
 
-lazy val standalone = (project in file("cluster-manager/standalone"))
-  .dependsOn(runtimeProtobuf, runtimeCommon, clusterManagerCommon, kompactExtension % "test->test; compile->compile")
+lazy val worker = (project in file("runtime/worker"))
+  .dependsOn(runtimeProtobuf, runtimeCommon % "test->test; compile->compile")
   .settings(runtimeSettings: _*)
-  .settings(Dependencies.standalone)
-  .settings(moduleName("clustermanager.standalone"))
-  .settings(Assembly.settings("clustermanager.standalone.Standalone", "standalone.jar"))
-  .settings(Sigar.loader())
+  .settings(Dependencies.worker)
+  .settings(moduleName("runtime.worker"))
+  .settings(Assembly.settings("runtime.worker.Worker", "worker.jar"))
 
 lazy val executorCommon = (project in file("executor/common"))
   .dependsOn(runtimeProtobuf % "test->test; compile->compile")
   .settings(runtimeSettings: _*)
-  .settings(Dependencies.clusterManagerCommon)
+  .settings(Dependencies.executorCommon)
   .settings(moduleName("executor.common"))
 
 lazy val yarnExecutor = (project in file("executor/yarn"))

@@ -4,7 +4,7 @@ import com.github.mdr.ascii.graph.Graph
 import com.github.mdr.ascii.layout.GraphLayout
 import com.github.mdr.ascii.layout.prefs.LayoutPrefsImpl
 
-object DagDrawer {
+private[runtime] object DagDrawer {
 
   // Just a Prototype for now
   def logicalDAG(): String = {

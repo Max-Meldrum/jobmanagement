@@ -93,16 +93,14 @@ object Dependencies {
   val statemanagerDeps: Seq[ModuleID] = basic ++ akkaDependencies ++ sigarDependencies
   val appmanagerCoreDeps: Seq[ModuleID] = basic ++ akkaDependencies ++ sigarDependencies ++ akkaHttpDependencies
   val yarnAppmanagerDeps: Seq[ModuleID] = appmanagerCoreDeps ++ yarnDependencies
-
   val protobufDeps: Seq[ModuleID] = testDependencies ++ protobufDependencies ++ akkaDependencies
   val kompactExtDeps: Seq[ModuleID] = basic ++ protobufDependencies ++ nettyDependencies ++ simpleAkkaDependencies ++ logbackDependencies
   val runtimeCommonDeps: Seq[ModuleID] = testDependencies ++ logDependencies ++ simpleAkkaDependencies
-  val standaloneManagerDeps: Seq[ModuleID] = basic ++ akkaDependencies ++ sigarDependencies ++ logbackDependencies
   val runtimeTestsDeps: Seq[ModuleID] = basic ++ akkaMultiNodeDependencies ++ akkaDependencies
-
-  // Cluster Manager
-  val clusterManagerCommonDeps: Seq[ModuleID] = basic ++ sigarDependencies
+  val workerDeps: Seq[ModuleID] = basic ++ akkaRemoteDependencies ++ sigarDependencies
   val yarnExecutorDeps: Seq[ModuleID] = basic ++ akkaRemoteDependencies ++ sigarDependencies ++ lightHdfsDependencies
+  // to be removed.
+  val executorCommonDeps: Seq[ModuleID] = basic ++ sigarDependencies
 
 
   // Helpers
@@ -113,7 +111,7 @@ object Dependencies {
   val kompactExtension = libraryDependencies ++= kompactExtDeps
   val runtimeCommon = libraryDependencies ++= runtimeCommonDeps
   val runtimeTests = libraryDependencies ++= runtimeTestsDeps
-  val clusterManagerCommon = libraryDependencies ++= clusterManagerCommonDeps
-  val standalone = libraryDependencies ++= standaloneManagerDeps
   val yarnExecutor = libraryDependencies ++= yarnExecutorDeps
+  val executorCommon = libraryDependencies ++= executorCommonDeps
+  val worker = libraryDependencies ++= workerDeps
 }
